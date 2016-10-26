@@ -1,0 +1,23 @@
+{
+  "name": "assume-zero-bot-power",
+  "version": "1.0.0",
+  "description": "The bot this physics class needs, but not the one it deserves.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AstroCB/"
+  },
+  "author": "Cameron Bernhardt (AstroCB)",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "request": "^2.76.0"
+  },
+  "engines": {
+    "node": "5.9.1"
+  }
+}
