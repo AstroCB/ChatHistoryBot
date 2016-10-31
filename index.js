@@ -100,6 +100,7 @@ function processFileData(data) {
 function handleMessage(message) {
     // Thanks Yiyi
     const comMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
+    console.log(comMatches);
     var txt = "";
     if (comMatches && comMatches[1]) {
         // This isn't necessary to check (could just pass the undefined match object), but this makes the function's behavior
@@ -108,7 +109,7 @@ function handleMessage(message) {
     } else {
         txt = getRandomMessage();
     }
-    return txt
+    return txt;
 }
 
 app.use(bodyParser.urlencoded({
