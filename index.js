@@ -13,11 +13,11 @@ function getRandomMessage(optName) {
             msg = getRandMessObj();
         }
     } else {
+      console.log(msg);
         while (msg.text.length > 320 || !isAuthor(msg.author, optName)) {
             msg = getRandMessObj();
         }
     }
-    console.log(msg);
 }
 
 function getRandMessObj() {
