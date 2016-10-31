@@ -6,14 +6,32 @@ const cheerio = require('cheerio');
 const app = express();
 var messages = [];
 
-function getRandomMessage() {
-    var randInd = Math.floor(Math.random() * (messages.length + 1));
-    var msg = messages[randInd];
-    while(msg.text.length > 320){ // 320 char limit
-      randInd = Math.floor(Math.random() * (messages.length + 1));
-      msg = messages[randInd];
+function getRandomMessage(optName) {
+    var msg = getRandMessObj();
+    if (!optName) { // No name specified
+        while (msg.text.length > 320) { // 320 char limit
+            msg = getRandMessObj();
+        }
+    } else {
+        while (msg.text.length > 320 || !isAuthor(msg.author, optName)) {
+            msg = getRandMessObj();
+        }
     }
     return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
+}
+
+function getRandMessObj() {
+    return messages[Math.floor(Math.random() * (messages.length + 1))]
+}
+
+function isAuthor(chatAuthor, matchedAuthor) {
+    chat = chatAuthor.toLowerCase();
+    match = matchedAuthor.toLowerCase();
+    if (match != "yiyi") {
+        return chat == match;
+    } else {
+        return (chat == "yiyi" || chat == "zhiyi" || chat == "jason" || chat == "justin");
+    }
 }
 
 function sendMessage(recipientId, message) {
@@ -70,13 +88,27 @@ function processFileData(data) {
                 }
             });
         } else {
-          msgStr = msgBody.text()
+            msgStr = msgBody.text()
         }
         message.text = msgStr;
         msgData.push(message);
     });
     messages = msgData;
     console.log("Messages stored");
+}
+
+function handleMessage(message) {
+    // Thanks Yiyi
+    const comMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
+    var txt = "";
+    if (comMatches && comMatches[1]) {
+        // This isn't necessary to check (could just pass the undefined match object), but this makes the function's behavior
+        // more obvious in case I ever have to fix/modify it
+        txt = getRandomMessage(comMatches[1]);
+    } else {
+        txt = getRandomMessage();
+    }
+    return txt
 }
 
 app.use(bodyParser.urlencoded({
@@ -87,7 +119,7 @@ app.listen((process.env.PORT || 3000));
 
 // Server frontpage
 app.get('/', function(req, res) {
-    res.send('This is the server for Assume Zero Bot Power');
+    res.send('This is the server for Assume Zero Bot Power.');
 });
 
 // Facebook Webhook
@@ -104,8 +136,9 @@ app.post('/webhook', function(req, res) {
     for (i = 0; i < events.length; i++) {
         var event = events[i];
         if (event.message && event.message.text && messages.length > 0) {
+            const msgText = handleMessage(event.message);
             sendMessage(event.sender.id, {
-                text: getRandomMessage()
+                text: msgText
             });
         }
         res.sendStatus(200);
