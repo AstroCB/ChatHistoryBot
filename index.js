@@ -54,7 +54,18 @@ function processFileData(data) {
 
         message.date = new Date($(node.children()[0]).text());
         message.author = $(body.children()[0]).text();
-        message.text = $(body.children()[1]).text();
+
+        const msgBody = $(body.children()[1]);
+        if (msgBody.children().length > 1) {
+            msgStr = ""
+            msgBody.each(function(i, m) {
+                msgStr += $(m).text();
+                if (i != msgBody.length - 1) {
+                    msgStr += "\n"
+                }
+            });
+        }
+
         msgData.push(message);
     });
     messages = msgData;
