@@ -7,8 +7,12 @@ const app = express();
 var messages = [];
 
 function getRandomMessage() {
-    const randInd = Math.floor(Math.random() * (messages.length + 1));
-    const msg = messages[randInd];
+    var randInd = Math.floor(Math.random() * (messages.length + 1));
+    var msg = messages[randInd];
+    while(msg.text.length > 320){ // 320 char limit
+      randInd = Math.floor(Math.random() * (messages.length + 1));
+      msg = messages[randInd];
+    }
     return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
 }
 
