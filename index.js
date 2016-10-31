@@ -65,7 +65,6 @@ function processFileData(data) {
                     msgStr += "\n"
                 }
             });
-            console.log(msgStr)
         } else {
           msgStr = msgBody.text()
         }
