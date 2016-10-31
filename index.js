@@ -41,10 +41,11 @@ function readFileData() {
         }
     });
 }
+readFileData();
 
 function processFileData(data) {
     const $ = cheerio.load(data);
-    console.log("Messages parsed");
+    console.log("Messages loaded");
     const messageList = $(".webMessengerMessageGroup");
     var msgData = [];
     messageList.each(function(i, m) {
@@ -55,15 +56,16 @@ function processFileData(data) {
         message.date = new Date($(node.children()[0]).text());
         message.author = $(body.children()[0]).text();
 
-        const msgBody = $(body.children()[1]);
-        msgStr = ""
+        const msgBody = $($($(body.children()[1])).children()[0]);
+        var msgStr = "";
         if (msgBody.children().length > 1) {
-            msgBody.each(function(i, m) {
+            msgBody.children().each(function(i, m) {
                 msgStr += $(m).text();
-                if (i != msgBody.length - 1) {
+                if (i != msgBody.children().length - 1) {
                     msgStr += "\n"
                 }
             });
+            console.log(msgStr)
         } else {
           msgStr = msgBody.text()
         }
@@ -71,9 +73,8 @@ function processFileData(data) {
         msgData.push(message);
     });
     messages = msgData;
+    console.log("Messages stored");
 }
-
-readFileData();
 
 app.use(bodyParser.urlencoded({
     extended: false
