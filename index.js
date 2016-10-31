@@ -17,7 +17,7 @@ function getRandomMessage(optName) {
             msg = getRandMessObj();
         }
     }
-    return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
+    console.log(msg);
 }
 
 function getRandMessObj() {
