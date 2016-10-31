@@ -21,7 +21,7 @@ function getRandomMessage(optName) {
 }
 
 function getRandMessObj() {
-    return messages[Math.floor(Math.random() * (messages.length + 1))]
+    return messages[Math.floor(Math.random() * (messages.length + 1))];
 }
 
 function isAuthor(chatAuthor, matchedAuthor) {
