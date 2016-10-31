@@ -17,6 +17,7 @@ function getRandomMessage(optName) {
             msg = getRandMessObj();
         }
     }
+    return msg;
 }
 
 function getRandMessObj() {
