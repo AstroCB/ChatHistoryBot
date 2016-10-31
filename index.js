@@ -13,7 +13,6 @@ function getRandomMessage(optName) {
             msg = getRandMessObj();
         }
     } else {
-      console.log(msg);
         while (msg.text.length > 320 || !isAuthor(msg.author, optName)) {
             msg = getRandMessObj();
         }
@@ -25,12 +24,14 @@ function getRandMessObj() {
 }
 
 function isAuthor(chatAuthor, matchedAuthor) {
-    chat = chatAuthor.toLowerCase();
+    chat = chatAuthor.toLowerCase().split(" ")[0];
     match = matchedAuthor.toLowerCase();
-    if (match != "yiyi") {
-        return chat == match;
+    if (chat == "yiyi") {
+        return (match == "yiyi" || match == "zhiyi" || match == "jason" || match == "justin");
+    } else if (chat == "cameron") {
+        return (match == "cam" || match == "cameron");
     } else {
-        return (chat == "yiyi" || chat == "zhiyi" || chat == "jason" || chat == "justin");
+        return chat == match;
     }
 }
 
@@ -100,7 +101,6 @@ function processFileData(data) {
 function handleMessage(message) {
     // Thanks Yiyi
     const comMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
-    console.log(comMatches);
     var txt = "";
     if (comMatches && comMatches[1]) {
         // This isn't necessary to check (could just pass the undefined match object), but this makes the function's behavior
