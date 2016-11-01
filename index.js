@@ -32,7 +32,7 @@ function isAuthor(chatAuthor, matchedAuthor) {
     } else if (chat == "cameron") {
         return (match == "cam" || match == "cameron");
     } else if (chat == "marin") {
-        return true; // For now, Marin is not supported
+        return false; // For now, Marin is not supported
     } else {
         return chat == match;
     }
