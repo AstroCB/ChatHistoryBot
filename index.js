@@ -14,7 +14,6 @@ function getRandomMessage(optName) {
         }
     } else {
         while (msg.text.length > 320 || !isAuthor(msg.author, optName)) {
-          console.log(isAuthor(msg.author, optName));
             msg = getRandMessObj();
         }
     }
