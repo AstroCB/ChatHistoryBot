@@ -14,6 +14,7 @@ function getRandomMessage(optName) {
         }
     } else {
         while (msg.text.length > 320 || !isAuthor(msg.author, optName)) {
+          console.log(isAuthor(msg.author, optName));
             msg = getRandMessObj();
         }
     }
@@ -32,7 +33,7 @@ function isAuthor(chatAuthor, matchedAuthor) {
     } else if (chat == "cameron") {
         return (match == "cam" || match == "cameron");
     } else if (chat == "marin") {
-        return false; // For now, Marin is not supported
+        return true; // For now, Marin is not supported
     } else {
         return chat == match;
     }
