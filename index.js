@@ -31,8 +31,8 @@ function isAuthor(chatAuthor, matchedAuthor) {
         return (match == "yiyi" || match == "zhiyi" || match == "jason" || match == "justin");
     } else if (chat == "cameron") {
         return (match == "cam" || match == "cameron");
-    } else if (match == "marin") {
-        return true; // For now, Marin is not supported
+    } else if (match == "marin" || match == "colin") {
+        return true; // For now, Marin/Colin are not supported
     } else {
         return chat == match;
     }
