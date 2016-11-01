@@ -9,11 +9,11 @@ var messages = [];
 function getRandomMessage(optName) {
     var msg = getRandMessObj();
     if (!optName) { // No name specified
-        while (msg.text.length > 320) { // 320 char limit
+        while (!validMessage(msg.text)) { // 320 char limit
             msg = getRandMessObj();
         }
     } else {
-        while (msg.text.length > 320 || !isAuthor(msg.author, optName)) {
+        while (!(validMessage(msg.text) && isAuthor(msg.author, optName))) {
             msg = getRandMessObj();
         }
     }
@@ -22,6 +22,10 @@ function getRandomMessage(optName) {
 
 function getRandMessObj() {
     return messages[Math.floor(Math.random() * (messages.length + 1))];
+}
+
+function validMessage(text) {
+  return (text.length <= 320 && text.length > 0);
 }
 
 function isAuthor(chatAuthor, matchedAuthor) {
