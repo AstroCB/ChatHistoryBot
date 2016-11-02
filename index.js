@@ -191,6 +191,7 @@ function handleMessage(message) {
     const hasNameMatch = !!(nameMatches && nameMatches[1]); // Double negate to ensure it's a boolean
     const dateMatches = message.text.match(/(\d(?:\d)?\/\d(?:\d)?\/\d\d\d\d)/g);
     const hasDateMatch = !!(dateMatches && dateMatches[0]);
+    console.log(hasDateMatch);
     return getRandomMessage(hasNameMatch ? nameMatches : null, hasDateMatch ? dateMatches : null);
 }
 
