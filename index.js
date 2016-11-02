@@ -183,6 +183,15 @@ function processFileData(data) {
     });
     messages = msgData;
     console.log("Messages stored");
+    // console.log(handleMessage({text: "Yo Larry 11/25/2015"}));
+    // console.log(handleMessage({text: "Yo Larry"}));
+    console.log(handleMessage({text: "05/11/2016"}));
+    // console.log(handleMessage({text: "10/25/2015 11/05/2015"}));
+    // console.log(handleMessage({text: "Yo Larry 10/25/2015 11/05/2015"}));
+    // console.log(handleMessage({text: "asdfjkl;"}));
+    // console.log(handleMessage({text: "Yo Larry 12/22/2015"}));
+    // console.log(handleMessage({text: "Yo Larry 11/21/2015"}));
+    // console.log(handleMessage({text: "Yo Larry 10/26/2015"}));
 }
 
 function handleMessage(message) {
