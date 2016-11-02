@@ -5,7 +5,6 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 const app = express();
 var messages = [];
-var stack = [];
 
 function getRandomMessage(optName, optDate) {
     var msg = getRandMessObj();
@@ -24,11 +23,8 @@ function getRandomMessage(optName, optDate) {
             matched: optDate,
             name: "date"
         } : null;
-        stack = messages;
-        // 15000 is an arbitrary stopping point to prevent infinite while-looping
-        // It should be 0 (when all of the messages have been checked), but JS apparently
-        // Decides it's an infinite loop and crashes around 20000 messages in
-        while (!(validMessage(msg.text) && validWithOpts([authData, dateData])) && stack.length > 15000) {
+
+        while (!(validMessage(msg.text) && validWithOpts([authData, dateData]))) {
             msg = getRandMessObj();
             if (authData) {
                 authData.current = msg.author;
@@ -36,23 +32,14 @@ function getRandomMessage(optName, optDate) {
             if (dateData) {
                 dateData.current = msg.date;
             }
-            console.log(stack.length);
+            console.log(msg);
         }
     }
     return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
 }
 
-function pop(arr, ind) {
-    if (ind > -1) {
-        const temp = arr[ind];
-        arr.splice(ind, 1);
-        return temp;
-    }
-    return null;
-}
-
 function getRandMessObj() {
-    return pop(stack, Math.floor(Math.random() * (stack.length + 1)));
+    return messages[Math.floor(Math.random() * (messages.length + 1))];
 }
 
 function validMessage(text) {
@@ -196,10 +183,15 @@ function processFileData(data) {
         message.text = msgStr;
         msgData.push(message);
     });
-    // Initialize global data & temp arrays
     messages = msgData;
-    stack = msgData;
     console.log("Messages stored");
+    // console.log(handleMessage({text: "Yo Larry 11/25/2015"}));
+    // console.log(handleMessage({text: "Yo Larry"}));
+    console.log(handleMessage({text: "05/11/2016"}));
+    // console.log(handleMessage({text: "asdfjkl;"}));
+    // console.log(handleMessage({text: "Yo Larry 12/22/2015"}));
+    // console.log(handleMessage({text: "Yo Larry 11/21/2015"}));
+    // console.log(handleMessage({text: "Yo Larry 10/26/2015"}));
 }
 
 function handleMessage(message) {
