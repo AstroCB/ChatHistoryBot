@@ -32,7 +32,6 @@ function getRandomMessage(optName, optDate) {
             if (dateData) {
                 dateData.current = msg.date;
             }
-            console.log(msg);
         }
     }
     return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
@@ -88,10 +87,9 @@ function checkAuth(data) {
 function checkDate(data) {
     current = data.current;
     matchedDates = data.matched;
-
-    if (matchedDates.length > 2) { // Range
-        const firstMatch = new Date(matchedDates[1]);
-        const secondMatch = new Date(matchedDates[2]);
+    if (matchedDates.length > 1) { // Range
+        const firstMatch = new Date(matchedDates[0]);
+        const secondMatch = new Date(matchedDates[1]);
         if (firstMatch.toDateString() == secondMatch.toDateString()) {
             // Same date: return within day
             return verifyOneDate(current, firstMatch);
@@ -103,7 +101,7 @@ function checkDate(data) {
             return true; // Terminate: passed invalid date range
         }
     } else { // Only 1
-        return verifyOneDate(current, new Date(matchedDates[1]));
+        return verifyOneDate(current, new Date(matchedDates[0]));
     }
 }
 
@@ -185,21 +183,14 @@ function processFileData(data) {
     });
     messages = msgData;
     console.log("Messages stored");
-    // console.log(handleMessage({text: "Yo Larry 11/25/2015"}));
-    // console.log(handleMessage({text: "Yo Larry"}));
-    console.log(handleMessage({text: "05/11/2016"}));
-    // console.log(handleMessage({text: "asdfjkl;"}));
-    // console.log(handleMessage({text: "Yo Larry 12/22/2015"}));
-    // console.log(handleMessage({text: "Yo Larry 11/21/2015"}));
-    // console.log(handleMessage({text: "Yo Larry 10/26/2015"}));
 }
 
 function handleMessage(message) {
     // Thanks Yiyi
     const nameMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
     const hasNameMatch = !!(nameMatches && nameMatches[1]); // Double negate to ensure it's a boolean
-    const dateMatches = message.text.match(/(\d(?:\d)*\/\d(?:\d)*\/\d\d\d\d)/);
-    const hasDateMatch = !!(dateMatches && dateMatches[1]);
+    const dateMatches = message.text.match(/(\d(?:\d)?\/\d(?:\d)?\/\d\d\d\d)/g);
+    const hasDateMatch = !!(dateMatches && dateMatches[0]);
     return getRandomMessage(hasNameMatch ? nameMatches : null, hasDateMatch ? dateMatches : null);
 }
 
