@@ -5,32 +5,88 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 const app = express();
 var messages = [];
+var stack = [];
 
-function getRandomMessage(optName) {
+function getRandomMessage(optName, optDate) {
     var msg = getRandMessObj();
-    if (!optName) { // No name specified
+    if (!(optName || optDate)) { // No name/date specified
         while (!validMessage(msg.text)) { // 320 char limit
             msg = getRandMessObj();
         }
-    } else {
-        while (!(validMessage(msg.text) && isAuthor(msg.author, optName))) {
+    } else { // At least one option was passed (can modularize later if I add a lot of opts)
+        const authData = optName ? {
+            current: msg.author,
+            matched: optName[1],
+            name: "auth"
+        } : null;
+        const dateData = optDate ? {
+            current: msg.date,
+            matched: optDate,
+            name: "date"
+        } : null;
+        stack = messages;
+        // 15000 is an arbitrary stopping point to prevent infinite while-looping
+        // It should be 0 (when all of the messages have been checked), but JS apparently
+        // Decides it's an infinite loop and crashes around 20000 messages in
+        while (!(validMessage(msg.text) && validWithOpts([authData, dateData])) && stack.length > 15000) {
             msg = getRandMessObj();
+            if (authData) {
+                authData.current = msg.author;
+            }
+            if (dateData) {
+                dateData.current = msg.date;
+            }
+            console.log(stack.length);
         }
     }
     return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
 }
 
+function pop(arr, ind) {
+    if (ind > -1) {
+        const temp = arr[ind];
+        arr.splice(ind, 1);
+        return temp;
+    }
+    return null;
+}
+
 function getRandMessObj() {
-    return messages[Math.floor(Math.random() * (messages.length + 1))];
+    return pop(stack, Math.floor(Math.random() * (stack.length + 1)));
 }
 
 function validMessage(text) {
-  return (text.length <= 320 && text.length > 0);
+    return (text.length <= 320 && text.length > 0);
 }
 
-function isAuthor(chatAuthor, matchedAuthor) {
-    chat = chatAuthor.toLowerCase().split(" ")[0];
-    match = matchedAuthor.toLowerCase();
+function validWithOpts(opts) {
+    var results = [];
+    for (var i = 0; i < opts.length; i++) {
+        if (opts[i]) {
+            results.push(check(opts[i]));
+        }
+    }
+    return (results.indexOf(false) < 0);
+}
+
+function check(opt) {
+    switch (opt.name) {
+        case 'auth':
+            return checkAuth(opt);
+            break;
+        case 'date':
+            return checkDate(opt);
+            break;
+        default:
+            console.log("Test not found: " + opt.name);
+            return false;
+            break;
+    }
+}
+
+function checkAuth(data) {
+    chat = data.current.toLowerCase().split(" ")[0]; // First name from author field
+    match = data.matched.toLowerCase();
     if (chat == "yiyi") {
         return (match == "yiyi" || match == "zhiyi" || match == "jason" || match == "justin");
     } else if (chat == "cameron") {
@@ -40,6 +96,45 @@ function isAuthor(chatAuthor, matchedAuthor) {
     } else {
         return chat == match;
     }
+}
+
+function checkDate(data) {
+    current = data.current;
+    matchedDates = data.matched;
+
+    if (matchedDates.length > 2) { // Range
+        const firstMatch = new Date(matchedDates[1]);
+        const secondMatch = new Date(matchedDates[2]);
+        if (firstMatch.toDateString() == secondMatch.toDateString()) {
+            // Same date: return within day
+            return verifyOneDate(current, firstMatch);
+        }
+        if (firstMatch < secondMatch && dateValid(firstMatch) && dateValid(secondMatch)) {
+            // Return whether current date is in passed range
+            return (current >= firstMatch && current <= secondMatch);
+        } else {
+            return true; // Terminate: passed invalid date range
+        }
+    } else { // Only 1
+        return verifyOneDate(current, new Date(matchedDates[1]));
+    }
+}
+
+function verifyOneDate(current, match) {
+    // Only need to check if they're the same day
+    if (dateValid(match)) {
+        return (match.toDateString() == current.toDateString());
+    } else {
+        return true; // Terminate: invalid date
+    }
+}
+
+function dateValid(date) {
+    // Thank you sorted arrays
+    const firstDate = messages[0].date;
+    const lastDate = messages[messages.length - 1].date;
+    // Match occurs after first message and before last
+    return (date >= firstDate && date <= lastDate);
 }
 
 function sendMessage(recipientId, message) {
@@ -101,22 +196,19 @@ function processFileData(data) {
         message.text = msgStr;
         msgData.push(message);
     });
+    // Initialize global data & temp arrays
     messages = msgData;
+    stack = msgData;
     console.log("Messages stored");
 }
 
 function handleMessage(message) {
     // Thanks Yiyi
-    const comMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
-    var txt = "";
-    if (comMatches && comMatches[1]) {
-        // This isn't necessary to check (could just pass the undefined match object), but this makes the function's behavior
-        // more obvious in case I ever have to fix/modify it
-        txt = getRandomMessage(comMatches[1]);
-    } else {
-        txt = getRandomMessage();
-    }
-    return txt;
+    const nameMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
+    const hasNameMatch = !!(nameMatches && nameMatches[1]); // Double negate to ensure it's a boolean
+    const dateMatches = message.text.match(/(\d(?:\d)*\/\d(?:\d)*\/\d\d\d\d)/);
+    const hasDateMatch = !!(dateMatches && dateMatches[1]);
+    return getRandomMessage(hasNameMatch ? nameMatches : null, hasDateMatch ? dateMatches : null);
 }
 
 app.use(bodyParser.urlencoded({
