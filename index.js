@@ -194,7 +194,7 @@ function handleMessage(message) {
     // Thanks Yiyi
     const nameMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
     const hasNameMatch = !!(nameMatches && nameMatches[1]); // Double negate to ensure it's a boolean
-    const dateMatches = message.text.match(/(\d(?:\d)?\/\d(?:\d)?\/\d\d\d\d)/g);
+    const dateMatches = message.text.match(/(\d(?:\d)?\/\d(?:\d)?\/\d\d(?:\d\d)?)/g);
     const hasDateMatch = !!(dateMatches && dateMatches[0]);
     return getRandomMessage(hasNameMatch ? nameMatches : null, hasDateMatch ? dateMatches : null);
 }
