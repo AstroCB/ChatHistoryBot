@@ -84,12 +84,17 @@ function checkAuth(data) {
     }
 }
 
+Date.prototype.addDay = function() {
+    this.setDate(this.getDate() + 1);
+}
+
 function checkDate(data) {
     current = data.current;
     matchedDates = data.matched;
     if (matchedDates.length > 1) { // Range
         const firstMatch = new Date(matchedDates[0]);
         const secondMatch = new Date(matchedDates[1]);
+        secondMatch.addDay();
         if (firstMatch.toDateString() == secondMatch.toDateString()) {
             // Same date: return within day
             return verifyOneDate(current, firstMatch);
@@ -183,6 +188,11 @@ function processFileData(data) {
     });
     messages = msgData;
     console.log("Messages stored");
+    for (var i = 0; i < 50; i++) {
+        console.log(handleMessage({
+            text: "10/21/2015 10/31/2015"
+        }));
+    }
 }
 
 function handleMessage(message) {
