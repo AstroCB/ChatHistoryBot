@@ -188,11 +188,6 @@ function processFileData(data) {
     });
     messages = msgData;
     console.log("Messages stored");
-    for (var i = 0; i < 50; i++) {
-        console.log(handleMessage({
-            text: "10/21/2015 10/31/2015"
-        }));
-    }
 }
 
 function handleMessage(message) {
