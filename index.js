@@ -192,7 +192,8 @@ function processFileData(data) {
 
 function getRandLine(file) {
     const fileData = fs.readFileSync("markov_sentences/" + file, {encoding: "utf-8"});
-    const fileArr = fileData.split("\n");
+    var fileArr = fileData.split("\n");
+    fileArr.pop(); // Get rid of extra newline at end of file
     return fileArr[Math.floor(Math.random() * fileArr.length)]; // Random line from Markov file
 }
 
@@ -223,7 +224,7 @@ function getMarkovs(matches) {
 }
 
 function handleMessage(message) {
-    const markMatches = message.text.match(/Yo (Yiyi|Larry|Cam)?bot/i);
+    const markMatches = message.text.match(/Yo ((?:zh|y)iyi|j(?:ason|ustin)|larry|cam(?:eron)?)?bot/i);
     if (markMatches) {
         return getMarkovs(markMatches);
     } else {
