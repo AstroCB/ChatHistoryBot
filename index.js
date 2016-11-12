@@ -190,13 +190,50 @@ function processFileData(data) {
     console.log("Messages stored");
 }
 
+function getRandLine(file) {
+    const fileData = fs.readFileSync("markov_sentences/" + file, {encoding: "utf-8"});
+    const fileArr = fileData.split("\n");
+    return fileArr[Math.floor(Math.random() * fileArr.length)]; // Random line from Markov file
+}
+
+function getMarkovs(matches) {
+    const a = matches[1] ? matches[1].toLowerCase() : null;
+    if (a) { // Name param passed
+        if (a == "cam" || a == "cameron") {
+            return getRandLine("cam.txt") + " ~ Cameron Bernhardt";
+        } else if (a == "yiyi" || a == "zhiyi" || a == "jason" || a == "justin") {
+            return getRandLine("yiyi.txt") + " ~ Yiyi Kuang";
+        } else if (a == "larry") {
+            return getRandLine("larry.txt") + " ~ Larry Steele";
+        }
+    } else {
+        const authors = [{
+            name: "cam.txt",
+            author: "Cameron Bernhardt"
+        }, {
+            name: "yiyi.txt",
+            author: "Yiyi Kuang"
+        }, {
+            name: "larry.txt",
+            author: "Larry Steele"
+        }];
+        const chosen = authors[Math.floor(Math.random() * authors.length)];
+        return getRandLine(chosen.name) + " ~ " + chosen.author;
+    }
+}
+
 function handleMessage(message) {
-    // Thanks Yiyi
-    const nameMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
-    const hasNameMatch = !!(nameMatches && nameMatches[1]); // Double negate to ensure it's a boolean
-    const dateMatches = message.text.match(/(\d(?:\d)?\/\d(?:\d)?\/\d\d(?:\d\d)?)/g);
-    const hasDateMatch = !!(dateMatches && dateMatches[0]);
-    return getRandomMessage(hasNameMatch ? nameMatches : null, hasDateMatch ? dateMatches : null);
+    const markMatches = message.text.match(/Yo (Yiyi|Larry|Cam)?bot/i);
+    if (markMatches) {
+        return getMarkovs(markMatches);
+    } else {
+        // Thanks Yiyi
+        const nameMatches = message.text.match(/Yo (jonah|larry|cam(?:eron)?|(?:zh|y)iyi|j(?:ason|ustin)|colin|marin)/i);
+        const hasNameMatch = !!(nameMatches && nameMatches[1]); // Double negate to ensure it's a boolean
+        const dateMatches = message.text.match(/(\d(?:\d)?\/\d(?:\d)?\/\d\d(?:\d\d)?)/g);
+        const hasDateMatch = !!(dateMatches && dateMatches[0]);
+        return getRandomMessage(hasNameMatch ? nameMatches : null, hasDateMatch ? dateMatches : null);
+    }
 }
 
 app.use(bodyParser.urlencoded({
