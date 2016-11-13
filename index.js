@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
 const fs = require('fs');
-const cheerio = require('cheerio');
 const app = express();
 var messages = [];
 
@@ -19,7 +18,7 @@ function getRandomMessage(optName, optDate) {
             name: "auth"
         } : null;
         const dateData = optDate ? {
-            current: msg.date,
+            current: new Date(msg.date),
             matched: optDate,
             name: "date"
         } : null;
@@ -30,15 +29,15 @@ function getRandomMessage(optName, optDate) {
                 authData.current = msg.author;
             }
             if (dateData) {
-                dateData.current = msg.date;
+                dateData.current = new Date(msg.date);
             }
         }
     }
-    return msg.text + " — " + msg.author + ", " + msg.date.toLocaleDateString();
+    return msg.text + " — " + msg.author + ", " + new Date(msg.date).toLocaleDateString();
 }
 
 function getRandMessObj() {
-    return messages[Math.floor(Math.random() * (messages.length + 1))];
+    return messages[Math.floor(Math.random() * messages.length)];
 }
 
 function validMessage(text) {
@@ -80,6 +79,7 @@ function checkAuth(data) {
     } else if (match == "marin" || match == "colin") {
         return true; // For now, Marin/Colin are not supported
     } else {
+        // Jonah/Larry
         return chat == match;
     }
 }
@@ -121,8 +121,8 @@ function verifyOneDate(current, match) {
 
 function dateValid(date) {
     // Thank you sorted arrays
-    const firstDate = messages[0].date;
-    const lastDate = messages[messages.length - 1].date;
+    const firstDate = new Date(messages[0].date);
+    const lastDate = new Date(messages[messages.length - 1].date);
     // Match occurs after first message and before last
     return (date >= firstDate && date <= lastDate);
 }
@@ -149,52 +149,36 @@ function sendMessage(recipientId, message) {
     });
 }
 
-function readFileData() {
-    fs.readFile('messages.htm', 'utf-8', function(err, data) {
+function loadMessageData() {
+    fs.readFile("messages.txt", {
+        encoding: "utf-8"
+    }, function(err, data) {
         if (!err) {
-            processFileData(data);
-        }
-    });
-}
-readFileData();
-
-function processFileData(data) {
-    const $ = cheerio.load(data);
-    console.log("Messages loaded");
-    const messageList = $(".webMessengerMessageGroup");
-    var msgData = [];
-    messageList.each(function(i, m) {
-        var message = {};
-        const node = $($($(m).children()[0]).children()[1]);
-        const body = $(node.children()[1]);
-
-        message.date = new Date($(node.children()[0]).text());
-        message.author = $(body.children()[0]).text();
-
-        const msgBody = $($($(body.children()[1])).children()[0]);
-        var msgStr = "";
-        if (msgBody.children().length > 1) {
-            msgBody.children().each(function(i, m) {
-                msgStr += $(m).text();
-                if (i != msgBody.children().length - 1) {
-                    msgStr += "\n"
-                }
-            });
+            messages = JSON.parse(data);
+            console.log("Messages retrieved");
         } else {
-            msgStr = msgBody.text()
+            console.log(err);
         }
-        message.text = msgStr;
-        msgData.push(message);
     });
-    messages = msgData;
-    console.log("Messages stored");
 }
+loadMessageData();
 
 function getRandLine(file) {
-    const fileData = fs.readFileSync("markov_sentences/" + file, {encoding: "utf-8"});
+    const fileData = fs.readFileSync("markov_sentences/" + file, {
+        encoding: "utf-8"
+    });
     var fileArr = fileData.split("\n");
-    fileArr.pop(); // Get rid of extra newline at end of file
-    return fileArr[Math.floor(Math.random() * fileArr.length)]; // Random line from Markov file
+    fileArr = removeNewlines(fileArr);
+    return fileArr[Math.floor(Math.random() * (fileArr.length - 1))];
+}
+
+function removeNewlines(arr) {
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i] == "\n") {
+            arr.splice(i, 1);
+        }
+    }
+    return arr;
 }
 
 function getMarkovs(matches) {
