@@ -150,6 +150,7 @@ function sendMessage(recipientId, message) {
 }
 
 function loadMessageData() {
+    console.log("Loading messages");
     fs.readFile("messages.txt", {
         encoding: "utf-8"
     }, function(err, data) {
