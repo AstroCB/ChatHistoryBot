@@ -7,3 +7,4 @@ markov/message_data.py
 markov_sentences/
 messages.txt
 node_modules/
+bfg.jar
