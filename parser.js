@@ -1,17 +1,6 @@
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-function readFileData() {
-    fs.readFile('messages.htm', 'utf-8', function(err, data) {
-        if (!err) {
-            loadDataIntoFile(processFileData(data));
-        } else {
-            console.log(err);
-        }
-    });
-}
-readFileData();
-
 function processFileData(data) {
     const $ = cheerio.load(data);
     console.log("Messages loaded");
@@ -52,3 +41,14 @@ function loadDataIntoFile(data) {
         }
     });
 }
+
+function readFileData() {
+    fs.readFile('messages.htm', 'utf-8', function(err, data) {
+        if (!err) {
+            loadDataIntoFile(processFileData(data));
+        } else {
+            console.log(err);
+        }
+    });
+}
+readFileData();
