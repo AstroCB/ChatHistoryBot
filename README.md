@@ -1,4 +1,7 @@
-# Assume Zero Bot Power (AØBøt)
+# ChatHistoryBot (formerly Assume Zero Bot Power/AØBøt)
+
+> # Note
+> If you're here, you're probably looking for the newer project with a similar name, [AssumeZero Bot](https://github.com/AstroCB/AssumeZero-Bot).
 
 This is a Facebook Messenger bot written using [Node.js](http://nodejs.org). It allows users to access past messages from a large group chat with a variety of commands. In addition, it can generate new messages using [Markov chains](https://en.wikipedia.org/wiki/Markov_chain) and the past chat history of a given user. It is named for the group chat that inspired it, Assume Zero Brain Power.
 
